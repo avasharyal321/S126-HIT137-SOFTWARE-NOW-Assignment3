@@ -1,0 +1,13 @@
+import tkinter as tk
+
+
+def main():
+    root = tk.Tk()
+    root.title('Spot The Difference')
+    root.geometry('800x600')
+    tk.Label(root, text='Project scaffold ready').pack(pady=40)
+    root.mainloop()
+
+
+if __name__ == '__main__':
+    main()
