@@ -1,5 +1,2 @@
-
-### `requirements.txt`
-```txt
 opencv-python
 Pillow
