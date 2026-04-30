@@ -18,22 +18,32 @@ class Difference:
             return True
         return False
 
+    def marker_for_display(self, scale=1.0):
+        rx, ry, rw, rh = self.rect
+        cx = rx + rw // 2
+        cy = ry + rh // 2
+        r = max(rw, rh) // 2
+        return cx, cy, r
+
 
 class ColorShiftDifference(Difference):
     def apply(self, img):
         x, y, w, h = self.rect
         ih, iw = img.shape[:2]
-        x = max(0, min(x, iw - 1))
-        y = max(0, min(y, ih - 1))
+        x = max(0, min(x, iw-1))
+        y = max(0, min(y, ih-1))
         w = max(1, min(w, iw - x))
         h = max(1, min(h, ih - y))
         roi = img[y:y+h, x:x+w]
         if roi.size == 0:
             return img
         hsv = cv2.cvtColor(roi, cv2.COLOR_BGR2HSV)
-        hsv[:, :, 0] = (hsv[:, :, 0].astype(int) + random.randint(15, 45)) % 180
-        hsv[:, :, 1] = np.clip(hsv[:, :, 1].astype(int) + random.randint(10, 50), 0, 255)
-        img[y:y+h, x:x+w] = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
+        h_ch = (hsv[:, :, 0].astype(int) + random.randint(15, 45)) % 180
+        s_ch = np.clip(hsv[:, :, 1].astype(int) + random.randint(10, 50), 0, 255)
+        hsv[:, :, 0] = h_ch.astype('uint8')
+        hsv[:, :, 1] = s_ch.astype('uint8')
+        new_roi = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
+        img[y:y+h, x:x+w] = new_roi
         return img
 
 
@@ -41,8 +51,8 @@ class InvertDifference(Difference):
     def apply(self, img):
         x, y, w, h = self.rect
         ih, iw = img.shape[:2]
-        x = max(0, min(x, iw - 1))
-        y = max(0, min(y, ih - 1))
+        x = max(0, min(x, iw-1))
+        y = max(0, min(y, ih-1))
         w = max(1, min(w, iw - x))
         h = max(1, min(h, ih - y))
         roi = img[y:y+h, x:x+w]
@@ -56,8 +66,8 @@ class ShapeDifference(Difference):
     def apply(self, img):
         x, y, w, h = self.rect
         ih, iw = img.shape[:2]
-        x = max(0, min(x, iw - 1))
-        y = max(0, min(y, ih - 1))
+        x = max(0, min(x, iw-1))
+        y = max(0, min(y, ih-1))
         w = max(1, min(w, iw - x))
         h = max(1, min(h, ih - y))
         cx = x + w // 2
