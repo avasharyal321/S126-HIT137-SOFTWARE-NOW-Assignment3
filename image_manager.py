@@ -57,7 +57,7 @@ class ImageManager:
     def _overlap(self, a, b):
         ax, ay, aw, ah = a
         bx, by, bw, bh = b
-        return not (ax + aw < bx or bx + bw < ax or ay + ah < by or by + bh < ay)
+        return not (ax+aw < bx or bx+bw < ax or ay+ah < by or by+bh < ay)
 
     def _grid_pack(self, w, h, count):
         rects = []
@@ -69,8 +69,8 @@ class ImageManager:
             for c in range(cols):
                 if len(rects) >= count:
                     break
-                rx = int((c + 0.5) * w / cols - rw // 2)
-                ry = int((r + 0.5) * h / rows - rh // 2)
+                rx = int((c + 0.5) * w / cols - rw//2)
+                ry = int((r + 0.5) * h / rows - rh//2)
                 rects.append((max(0, rx), max(0, ry), rw, rh))
         return rects
 
