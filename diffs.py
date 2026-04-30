@@ -66,3 +66,6 @@ class ShapeDifference(Difference):
         color = (random.randint(0,255), random.randint(0,255), random.randint(0,255))
         cv2.circle(img, (cx, cy), radius, color, -1)
         return img
+
+
+DIFF_TYPES = [ColorShiftDifference, InvertDifference, ShapeDifference]
