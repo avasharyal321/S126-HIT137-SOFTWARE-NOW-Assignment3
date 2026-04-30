@@ -39,8 +39,14 @@ class ImageManager:
             rh = random.randint(min_rh, max_rh)
             rw = min(rw, w - 1)
             rh = min(rh, h - 1)
-            rx = random.randint(0, w - rw) if w - rw > 0 else 0
-            ry = random.randint(0, h - rh) if h - rh > 0 else 0
+            if w - rw > 0:
+                rx = random.randint(0, w - rw)
+            else:
+                rx = 0
+            if h - rh > 0:
+                ry = random.randint(0, h - rh)
+            else:
+                ry = 0
             new = (rx, ry, rw, rh)
             if not any(self._overlap(new, r) for r in rects):
                 rects.append(new)
