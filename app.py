@@ -9,11 +9,9 @@ class SpotTheDifferenceApp:
     def __init__(self, root):
         self.root = root
         self.root.title('Spot The Difference')
-        # sensible default window size and minimums so UI is usable immediately
         default_w, default_h = 1100, 720
         self.root.geometry(f'{default_w}x{default_h}')
         self.root.minsize(900, 600)
-        # center the window
         self.root.update_idletasks()
         sw = self.root.winfo_screenwidth()
         sh = self.root.winfo_screenheight()
@@ -25,8 +23,6 @@ class SpotTheDifferenceApp:
             pass
         self.im_manager = ImageManager()
 
-        # control buttons will be placed in the center area below images
-
         status_frame = tk.Frame(root, pady=4)
         status_frame.pack(fill='x')
         self.remaining_var = tk.StringVar(value='Remaining: 0')
@@ -34,10 +30,9 @@ class SpotTheDifferenceApp:
         tk.Label(status_frame, textvariable=self.remaining_var).pack(side='left', padx=6)
         tk.Label(status_frame, textvariable=self.mistakes_var).pack(side='left', padx=6)
 
-        # progress bar for found differences
         self.progress = ttk.Progressbar(status_frame, length=200, maximum=5)
         self.progress.pack(side='right', padx=6)
-        self.mistakes_left_label = tk.Label(status_frame, text='Mistakes left: ♥♥♥', fg='red')
+        self.mistakes_left_label = tk.Label(status_frame, text='Mistakes left: 3')
         self.mistakes_left_label.pack(side='right', padx=6)
 
         images_frame = tk.Frame(root, pady=8)
@@ -53,7 +48,6 @@ class SpotTheDifferenceApp:
         self.display_size = (500, 500)
         self.scale = 1.0
 
-        # center control buttons in the middle area
         center_frame = tk.Frame(root)
         center_frame.pack(expand=True, fill='both')
         control_frame = tk.Frame(center_frame)
@@ -94,19 +88,14 @@ class SpotTheDifferenceApp:
         remaining = sum(1 for f in self.found if not f)
         self.remaining_var.set(f'Remaining: {remaining}')
         self.mistakes_var.set(f'Mistakes: {self.mistakes}/3')
-        # update progress bar
         found = sum(1 for f in self.found if f)
         self.progress['value'] = found
-        # update mistakes left label
         left = max(0, 3 - self.mistakes)
-        hearts = '♥' * left + '♡' * (3 - left)
-        self.mistakes_left_label.config(text=f'Mistakes left: {hearts}')
+        self.mistakes_left_label.config(text=f'Mistakes left: {left}')
 
     def cv_to_tk(self, cv_img):
-        # cv image BGR -> RGB
         rgb = cv2.cvtColor(cv_img, cv2.COLOR_BGR2RGB)
         pil = Image.fromarray(rgb)
-        # fit into display_size while preserving aspect
         pil.thumbnail(self.display_size, Image.LANCZOS)
         return pil
 
@@ -114,11 +103,9 @@ class SpotTheDifferenceApp:
         left_pil = self.cv_to_tk(self.original_cv).copy()
         right_pil = self.cv_to_tk(self.modified_cv).copy()
 
-        # draw markers for found differences
         ld = ImageDraw.Draw(left_pil)
         rd = ImageDraw.Draw(right_pil)
 
-        # compute scale between original image and displayed image
         h, w = self.modified_cv.shape[:2]
         disp_w, disp_h = right_pil.size
         self.scale = w / disp_w
@@ -148,7 +135,6 @@ class SpotTheDifferenceApp:
         if getattr(self, 'game_over', False):
             return
         if self.mistakes >= 3:
-            # when out of guesses, show end dialog
             self.end_round('You reached 3 mistakes. Load a new image to try again.')
             return
 
@@ -187,14 +173,12 @@ class SpotTheDifferenceApp:
         self.update_display()
 
     def end_round(self, message):
-        # mark game over and show a modal dialog offering Restart or Load
         self.game_over = True
         dlg = tk.Toplevel(self.root)
         dlg.title('Round Complete')
         dlg.transient(self.root)
         dlg.resizable(False, False)
 
-        # contents
         tk.Label(dlg, text=message, pady=10, padx=10).pack()
         btn_frame = tk.Frame(dlg, pady=8)
         btn_frame.pack()
@@ -211,7 +195,6 @@ class SpotTheDifferenceApp:
         ttk.Button(btn_frame, text='Restart', command=do_restart).pack(side='left', padx=6)
         ttk.Button(btn_frame, text='Close', command=dlg.destroy).pack(side='left', padx=6)
 
-        # center dialog over main window
         self.root.update_idletasks()
         dlg.update_idletasks()
         try:
